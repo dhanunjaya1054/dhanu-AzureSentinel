@@ -28,16 +28,17 @@ def build_signature(customer_id, shared_key, date, content_length, method, conte
     x_headers = 'x-ms-date:' + date
     string_to_hash = method + "\n" + str(content_length) + "\n" + content_type + "\n" + x_headers + "\n" + resource
     bytes_to_hash = bytes(string_to_hash, encoding="utf-8")
-    decoded_key = b64decode(shared_key)
+    decoded_key = b64decode(shared_key.strip())
     encoded_hash = b64encode(hmac.new(decoded_key, bytes_to_hash, digestmod=hashlib.sha256).digest()).decode()
-    authorization = "SharedKey {}:{}".format(customer_id,encoded_hash)
+    authorization = "SharedKey {}:{}".format(customer_id, encoded_hash)
     return authorization
 
 
 def save_to_sentinel(logAnalyticsUri, customer_id, shared_key, alert_obj):
     from email.utils import formatdate
+    body = alert_obj.encode('utf-8') if isinstance(alert_obj, str) else alert_obj
     rfc1123date = formatdate(timeval=None, localtime=False, usegmt=True)
-    signature = build_signature(customer_id, shared_key, rfc1123date, len(alert_obj), "POST", "application/json", "/api/logs")
+    signature = build_signature(customer_id, shared_key, rfc1123date, len(body), "POST", "application/json", "/api/logs")
     uri = logAnalyticsUri + '/api/logs?api-version=2016-04-01'
 
     headers = {
@@ -47,7 +48,7 @@ def save_to_sentinel(logAnalyticsUri, customer_id, shared_key, alert_obj):
         'x-ms-date': rfc1123date,
         'time-generated-field': 'date'
     }
-    response = requests.post(uri,data=alert_obj, headers=headers)
+    response = requests.post(uri, data=body, headers=headers)
     if (response.status_code >= 200 and response.status_code <= 299):
         return response.status_code
     else:
