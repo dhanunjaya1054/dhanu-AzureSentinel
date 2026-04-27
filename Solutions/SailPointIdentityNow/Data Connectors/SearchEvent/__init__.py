@@ -11,7 +11,7 @@ import hashlib
 import hmac
 import base64
 import re
-from azure.cosmosdb.table.tableservice import TableService
+from azure.data.tables import TableServiceClient
 
 tenant_id = os.environ["TENANT_ID"]
 grant_type = os.environ["GRANT_TYPE"]
@@ -107,25 +107,27 @@ def main(mytimer: func.TimerRequest) -> None:
     url = f'https://{tenant_id}.api.identitynow.com/oauth/token'
     new_checkpoint_time = (datetime.datetime.utcnow() - datetime.timedelta(minutes=60)).isoformat() + "Z"
     checkpoint_table_name = 'checkpointTable'
-    table_service = TableService(account_name=storage_account_name, account_key=access_key)
+    table_service_client = TableServiceClient(
+        endpoint=f'https://{storage_account_name}.table.core.windows.net',
+        credential=access_key
+    )
+    table_client = table_service_client.create_table_if_not_exists(checkpoint_table_name)
     task = {
         'PartitionKey': 'checkpointTime',
         'RowKey': '001',
         'createdTime': new_checkpoint_time
     }
-    table_exists = table_service.exists(checkpoint_table_name)
 
     # Check if table already exists, if yes- get existing checkpoint time from the table entry.
     # If not then create table and insert the row containing new checkpoint time.
-    if not table_exists:
-        table_service.create_table(checkpoint_table_name)
-        table_service.insert_entity(checkpoint_table_name, task)
-        checkpoint_time = new_checkpoint_time
-    else:
-        returned_entity = table_service.get_entity(checkpoint_table_name, 'checkpointTime', '001')
-        checkpoint_time = returned_entity.createdTime
+    try:
+        returned_entity = table_client.get_entity(partition_key='checkpointTime', row_key='001')
+        checkpoint_time = returned_entity['createdTime']
         if use_current(new_checkpoint_time, checkpoint_time):
             checkpoint_time = new_checkpoint_time
+    except Exception:
+        table_client.create_entity(entity=task)
+        checkpoint_time = new_checkpoint_time
 
     tokenparams = {
         'grant_type': grant_type,
@@ -245,7 +247,7 @@ def main(mytimer: func.TimerRequest) -> None:
         task = {'PartitionKey': 'checkpointTime', 'RowKey': '001', 'createdTime': new_checkpoint_time}
 
         # Write new checkpoint time back to the table.
-        table_service.insert_or_replace_entity(checkpoint_table_name, task)
+        table_client.upsert_entity(entity=task)
 
         logging.info("Table successfully updated...")
     else:
