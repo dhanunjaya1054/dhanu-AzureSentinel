@@ -1,0 +1,114 @@
+{
+  "time": "2026-01-27T14:05:04.309Z",
+  "detail": {
+    "findings": [
+      {
+        "ProductArn": "arn:aws:securityhub:eu-west-1::product/aws/guardduty",
+        "Types": [
+          "TTPs/Command and Control/Trojan:Runtime-BlackholeTraffic!DNS"
+        ],
+        "SourceUrl": "https://eu-west-1.console.aws.amazon.com/guardduty/home?region=eu-west-1#/findings?macros=current&fId=dc99127ddbff4d4fb9eeea0fbf50c815",
+        "Action": {
+          "ActionType": "DNS_REQUEST",
+          "DnsRequestAction": {
+            "Domain": "GeneratedFindingDomainName",
+            "Protocol": "UDP",
+            "Blocked": false
+          }
+        },
+        "Description": "The process GeneratedFindingProcessName from EC2 instance i-99999999 is querying a blackholed domain name.",
+        "ProductName": "GuardDuty",
+        "FirstObservedAt": "2026-01-02T10:32:36.000Z",
+        "CreatedAt": "2026-01-02T10:32:36.138Z",
+        "LastObservedAt": "2026-01-27T14:00:42.000Z",
+        "CompanyName": "Amazon",
+        "FindingProviderFields": {
+          "Types": [
+            "TTPs/Command and Control/Trojan:Runtime-BlackholeTraffic!DNS"
+          ],
+          "Severity": {
+            "Normalized": 50,
+            "Label": "MEDIUM",
+            "Product": 5
+          }
+        },
+        "ProductFields": {
+          "aws/guardduty/service/serviceName": "guardduty",
+          "aws/securityhub/FindingId": "arn:aws:securityhub:eu-west-1::product/aws/guardduty/arn:aws:guardduty:eu-west-1:178828881563:detector/9cbe9bc8cec27780cc5b249985b03e6f/finding/dc99127ddbff4d4fb9eeea0fbf50c815",
+          "aws/securityhub/ProductName": "GuardDuty",
+          "aws/securityhub/CompanyName": "Amazon"
+        },
+        "SchemaVersion": "2018-10-08",
+        "GeneratorId": "arn:aws:guardduty:eu-west-1:178828881563:detector/9cbe9bc8cec27780cc5b249985b03e6f",
+        "Sample": true,
+        "RecordState": "ACTIVE",
+        "Title": "A Blackholed domain name was queried by EC2 instance i-99999999.",
+        "Workflow": {
+          "Status": "NEW"
+        },
+        "Severity": {
+          "Normalized": 50,
+          "Label": "MEDIUM",
+          "Product": 5
+        },
+        "Compliance": {
+          "Status": "FAILED",
+          "StatusReasons": [
+            {
+              "ReasonCode": "CIS_AWS_FOUNDATIONS_BENCHMARK_V_1_2_0",
+              "Description": "CIS AWS Foundations Benchmark v1.2.0"
+            }
+          ],
+          "SecurityControlId": "GuardDuty.1",
+          "SecurityControlParameters": [],
+          "RelatedRequirements": [
+            "CIS AWS Foundations Benchmark v1.2.0/3.1"
+          ],
+          "AssociatedStandards": [
+            {
+              "StandardsId": "standards/cis-aws-foundations-benchmark/v/1.2.0"
+            }
+          ]
+        },
+        "UpdatedAt": "2026-01-27T14:00:42.170Z",
+        "WorkflowState": "NEW",
+        "AwsAccountName": "pf-alzq-audit",
+        "AwsAccountId": "178828881563",
+        "Region": "eu-west-1",
+        "Id": "arn:aws:guardduty:eu-west-1:178828881563:detector/9cbe9bc8cec27780cc5b249985b03e6f/finding/dc99127ddbff4d4fb9eeea0fbf50c815",
+        "Resources": [
+          {
+            "Partition": "aws",
+            "Type": "AwsEc2Instance",
+            "Details": {
+              "AwsEc2Instance": {
+                "Type": "m3.xlarge",
+                "VpcId": "vpc-generatedvpcid1",
+                "ImageId": "ami-99999999",
+                "IpV4Addresses": [
+                  "198.51.100.1",
+                  "10.0.0.1"
+                ],
+                "SubnetId": "GeneratedFindingSubnetId1",
+                "LaunchedAt": "2016-08-02T02:05:06.000Z",
+                "IamInstanceProfileArn": "arn:aws:iam::012345678999:instance-profile/generated"
+              }
+            },
+            "Region": "eu-west-1",
+            "Id": "arn:aws:ec2:eu-west-1:178828881563:instance/i-99999999",
+            "Tags": {
+              "GeneratedFindingInstanceTag1": "GeneratedFindingInstanceValue1"
+            }
+          }
+        ],
+        "ProcessedAt": "2026-01-27T14:05:04.309Z",
+        "Remediation": {
+          "Recommendation": {
+            "Text": "For directions on how to fix this issue, consult the AWS Security Hub documentation.",
+            "Url": "https://docs.aws.amazon.com/console/securityhub/GuardDuty.1/remediation"
+          }
+        }
+      }
+    ]
+  }
+}

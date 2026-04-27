@@ -1,0 +1,95 @@
+{
+  "SalesforceRealTimeEvents_CL": {
+    "description": "Salesforce Real-Time Event Monitoring events for security threat detection",
+    "columns": [
+      {
+        "name": "TimeGenerated",
+        "type": "datetime",
+        "description": "The timestamp when the event was ingested into Microsoft Sentinel"
+      },
+      {
+        "name": "EventType",
+        "type": "string",
+        "description": "Type of real-time security event (e.g., CredentialStuffingEventStore, SessionHijackingEventStore, ApiAnomalyEventStore)"
+      },
+      {
+        "name": "EventDate",
+        "type": "datetime",
+        "description": "The timestamp when the event occurred in Salesforce"
+      },
+      {
+        "name": "EventIdentifier",
+        "type": "string",
+        "description": "Unique identifier for the event"
+      },
+      {
+        "name": "Username",
+        "type": "string",
+        "description": "Username of the user associated with the event"
+      },
+      {
+        "name": "UserId",
+        "type": "string",
+        "description": "Salesforce User ID (15 or 18 character ID)"
+      },
+      {
+        "name": "SourceIp",
+        "type": "string",
+        "description": "IP address from which the activity originated"
+      },
+      {
+        "name": "Score",
+        "type": "real",
+        "description": "Risk or anomaly score (0-100) assigned by Salesforce. Higher scores indicate higher risk."
+      },
+      {
+        "name": "Summary",
+        "type": "string",
+        "description": "Human-readable summary of the security event"
+      },
+      {
+        "name": "SecurityEventData",
+        "type": "dynamic",
+        "description": "Complete JSON payload containing all event details. Structure varies by EventType."
+      }
+    ],
+    "sampleData": [
+      {
+        "TimeGenerated": "2026-03-06T10:15:30.000Z",
+        "EventType": "CredentialStuffingEventStore",
+        "EventDate": "2026-03-06T10:14:25.000Z",
+        "EventIdentifier": "credstuff-2026-03-06-001",
+        "Username": "john.doe@company.com",
+        "UserId": "0058c000000ABCDEF",
+        "SourceIp": "203.0.113.42",
+        "Score": 85.5,
+        "Summary": "High-risk login from new location with previously compromised credentials",
+        "SecurityEventData": "{\"LoginType\":\"Web\",\"LoginStatus\":\"Failed\",\"RequestedEntities\":5,\"Platform\":\"Windows\",\"Browser\":\"Chrome 120\"}"
+      },
+      {
+        "TimeGenerated": "2026-03-06T11:22:15.000Z",
+        "EventType": "SessionHijackingEventStore",
+        "EventDate": "2026-03-06T11:21:10.000Z",
+        "EventIdentifier": "sessionhij-2026-03-06-002",
+        "Username": "jane.smith@company.com",
+        "UserId": "0058c000000GHIJKL",
+        "SourceIp": "198.51.100.25",
+        "Score": 92.3,
+        "Summary": "Session IP changed from trusted to suspicious location",
+        "SecurityEventData": "{\"CurrentIp\":\"198.51.100.25\",\"PreviousIp\":\"192.0.2.50\",\"CurrentPlatform\":\"Android\",\"PreviousPlatform\":\"Windows\",\"SessionKey\":\"abc123xyz\"}"
+      },
+      {
+        "TimeGenerated": "2026-03-06T12:45:00.000Z",
+        "EventType": "ApiAnomalyEventStore",
+        "EventDate": "2026-03-06T12:43:55.000Z",
+        "EventIdentifier": "apianom-2026-03-06-003",
+        "Username": "integration.user@company.com",
+        "UserId": "0058c000000MNOPQR",
+        "SourceIp": "203.0.113.100",
+        "Score": 78.0,
+        "Summary": "Unusual API call volume - 10x normal rate",
+        "SecurityEventData": "{\"RowsProcessed\":150000,\"ApiType\":\"REST\",\"ApiVersion\":\"v65.0\",\"Operation\":\"Query\",\"CallCount\":5000,\"NormalCallCount\":500}"
+      }
+    ]
+  }
+}

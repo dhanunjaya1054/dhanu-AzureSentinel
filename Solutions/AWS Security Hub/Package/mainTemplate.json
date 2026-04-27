@@ -45,7 +45,7 @@
   },
   "variables": {
     "_solutionName": "AWS Security Hub",
-    "_solutionVersion": "3.0.2",
+    "_solutionVersion": "3.0.3",
     "solutionId": "azuresentinel.azure-sentinel-solution-awssecurityhub",
     "_solutionId": "[variables('solutionId')]",
     "workspaceResourceId": "[resourceId('microsoft.OperationalInsights/Workspaces', parameters('workspace'))]",
@@ -371,6 +371,20 @@
               "kind": "[variables('blanks')]",
               "properties": {
                 "dataCollectionEndpointId": "[variables('dataCollectionEndpointId1')]",
+                "streamDeclarations": {
+                  "SENTINEL_AWSSECHUB": {
+                    "columns": [
+                      {
+                        "name": "time",
+                        "type": "datetime"
+                      },
+                      {
+                        "name": "detail",
+                        "type": "dynamic"
+                      }
+                    ]
+                  }
+                },
                 "destinations": {
                   "logAnalytics": [
                     {
@@ -382,11 +396,13 @@
                 "dataFlows": [
                   {
                     "streams": [
-                      "Microsoft-AWSSecurityHubFindings"
+                      "Custom-SENTINEL_AWSSECHUB"
                     ],
                     "destinations": [
                       "clv2ws1"
-                    ]
+                    ],
+                    "transformKql": "source | extend TimeGenerated = todatetime(['time']) | extend _findings = parse_json(detail).findings[0] | project TimeGenerated = todatetime(['time']), AwsRegion = tostring(_findings.Region), AwsAccountId = tostring(_findings.AwsAccountId), ComplianceStatus = tostring(_findings.Compliance.Status), ComplianceStatusReasons = todynamic(_findings.Compliance.StatusReasons), ComplianceSecurityControlId = tostring(_findings.Compliance.SecurityControlId), ComplianceSecurityControlParameters = todynamic(_findings.Compliance.SecurityControlParameters), ComplianceRelatedRequirements = todynamic(_findings.Compliance.RelatedRequirements), ComplianceAssociatedStandards = todynamic(_findings.Compliance.AssociatedStandards), AwsSecurityFindingTitle = tostring(_findings.Title), AwsSecurityFindingId = tostring(_findings.Id), AwsSecurityFindingDescription = tostring(_findings.Description), AwsSecurityFindingTypes = todynamic(_findings.Types), AwsSecurityFindingCreatedAt = todatetime(_findings.CreatedAt), AwsSecurityFindingFirstObservedAt = todatetime(_findings.FirstObservedAt), AwsSecurityFindingUpdatedAt = todatetime(_findings.UpdatedAt), AwsSecurityFindingLastObservedAt = todatetime(_findings.LastObservedAt), AwsSecurityFindingProcessedAt = todatetime(_findings.ProcessedAt), AwsSecurityFindingGeneratorId = tostring(_findings.GeneratorId), AwsSecurityFindingProductArn = tostring(_findings.ProductArn), AwsSecurityFindingProductName = tostring(_findings.ProductName), AwsSecurityFindingProductFields = todynamic(_findings.ProductFields), AwsSecurityFindingSeverity = todynamic(_findings.FindingProviderFields.Severity), Remediation = todynamic(_findings.Remediation), SchemaVersion = tostring(_findings.SchemaVersion), Resources = todynamic(_findings.Resources), RecordState = tostring(_findings.RecordState), WorkflowState = tostring(_findings.WorkflowState), RawData = todynamic(parse_json(detail)),
+                    "outputStream": "Microsoft-AWSSecurityHubFindings"
                   }
                 ]
               }
@@ -711,7 +727,7 @@
                   }
                 },
                 "dcrConfig": {
-                  "streamName": "SENTINEL_AWSSECHUB",
+                  "streamName": "Custom-SENTINEL_AWSSECHUB",
                   "dataCollectionEndpoint": "[[parameters('dcrConfig').dataCollectionEndpoint]",
                   "dataCollectionRuleImmutableId": "[[parameters('dcrConfig').dataCollectionRuleImmutableId]"
                 },
@@ -747,7 +763,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "CloudTrailTrailEncryptionDisabled_AnalyticalRules Analytics Rule with template version 3.0.2",
+        "description": "CloudTrailTrailEncryptionDisabled_AnalyticalRules Analytics Rule with template version 3.0.3",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('analyticRuleObject1').analyticRuleVersion1]",
@@ -775,10 +791,10 @@
                 "status": "Available",
                 "requiredDataConnectors": [
                   {
-                    "connectorId": "AWSSecurityHub",
                     "dataTypes": [
                       "AWSSecurityHubFindings"
-                    ]
+                    ],
+                    "connectorId": "AWSSecurityHub"
                   }
                 ],
                 "tactics": [
@@ -795,6 +811,7 @@
                 ],
                 "entityMappings": [
                   {
+                    "entityType": "Account",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
@@ -804,23 +821,22 @@
                         "identifier": "CloudAppAccountId",
                         "columnName": "AwsAccountId"
                       }
-                    ],
-                    "entityType": "Account"
+                    ]
                   },
                   {
+                    "entityType": "CloudApplication",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
                         "columnName": "TrailId"
                       }
-                    ],
-                    "entityType": "CloudApplication"
+                    ]
                   }
                 ],
                 "customDetails": {
-                  "ComplianceControlId": "ComplianceSecurityControlId",
                   "Region": "AwsRegion",
-                  "FindingId": "AwsSecurityFindingId"
+                  "FindingId": "AwsSecurityFindingId",
+                  "ComplianceControlId": "ComplianceSecurityControlId"
                 },
                 "alertDetailsOverride": {
                   "alertDisplayNameFormat": "AWS CloudTrail trail {{TrailId}} lacks KMS encryption",
@@ -878,7 +894,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "EC2SecurityGroupHighRiskOpenPorts_AnalyticalRules Analytics Rule with template version 3.0.2",
+        "description": "EC2SecurityGroupHighRiskOpenPorts_AnalyticalRules Analytics Rule with template version 3.0.3",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('analyticRuleObject2').analyticRuleVersion2]",
@@ -906,10 +922,10 @@
                 "status": "Available",
                 "requiredDataConnectors": [
                   {
-                    "connectorId": "AWSSecurityHub",
                     "dataTypes": [
                       "AWSSecurityHubFindings"
-                    ]
+                    ],
+                    "connectorId": "AWSSecurityHub"
                   }
                 ],
                 "tactics": [
@@ -924,6 +940,7 @@
                 ],
                 "entityMappings": [
                   {
+                    "entityType": "Account",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
@@ -933,25 +950,24 @@
                         "identifier": "CloudAppAccountId",
                         "columnName": "AwsAccountId"
                       }
-                    ],
-                    "entityType": "Account"
+                    ]
                   },
                   {
+                    "entityType": "CloudApplication",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
                         "columnName": "SecurityGroupARN"
                       }
-                    ],
-                    "entityType": "CloudApplication"
+                    ]
                   }
                 ],
                 "customDetails": {
-                  "SecurityGroupId": "SecurityGroupId",
-                  "ComplianceControlId": "ComplianceSecurityControlId",
                   "Region": "AwsRegion",
+                  "SecurityGroupId": "SecurityGroupId",
+                  "FindingId": "AwsSecurityFindingId",
                   "OpenHighRiskPorts": "OpenHighRiskPorts",
-                  "FindingId": "AwsSecurityFindingId"
+                  "ComplianceControlId": "ComplianceSecurityControlId"
                 },
                 "alertDetailsOverride": {
                   "alertDisplayNameFormat": "EC2 Security group {{SecurityGroupId}} allows unrestricted high-risk ports",
@@ -1009,7 +1025,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "IAMPolicyWithFullAdminPriv_AnalyticalRules Analytics Rule with template version 3.0.2",
+        "description": "IAMPolicyWithFullAdminPriv_AnalyticalRules Analytics Rule with template version 3.0.3",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('analyticRuleObject3').analyticRuleVersion3]",
@@ -1037,10 +1053,10 @@
                 "status": "Available",
                 "requiredDataConnectors": [
                   {
-                    "connectorId": "AWSSecurityHub",
                     "dataTypes": [
                       "AWSSecurityHubFindings"
-                    ]
+                    ],
+                    "connectorId": "AWSSecurityHub"
                   }
                 ],
                 "tactics": [
@@ -1057,6 +1073,7 @@
                 ],
                 "entityMappings": [
                   {
+                    "entityType": "Account",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
@@ -1066,14 +1083,13 @@
                         "identifier": "CloudAppAccountId",
                         "columnName": "AwsAccountId"
                       }
-                    ],
-                    "entityType": "Account"
+                    ]
                   }
                 ],
                 "customDetails": {
-                  "ComplianceControlId": "ComplianceSecurityControlId",
                   "Region": "AwsRegion",
-                  "FindingId": "AwsSecurityFindingId"
+                  "FindingId": "AwsSecurityFindingId",
+                  "ComplianceControlId": "ComplianceSecurityControlId"
                 },
                 "alertDetailsOverride": {
                   "alertDisplayNameFormat": "AWS Account {{AwsAccountId}} has IAM Policy with full administrative privileges",
@@ -1131,7 +1147,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "IAMRootUserMFADisabled_AnalyticalRules Analytics Rule with template version 3.0.2",
+        "description": "IAMRootUserMFADisabled_AnalyticalRules Analytics Rule with template version 3.0.3",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('analyticRuleObject4').analyticRuleVersion4]",
@@ -1159,10 +1175,10 @@
                 "status": "Available",
                 "requiredDataConnectors": [
                   {
-                    "connectorId": "AWSSecurityHub",
                     "dataTypes": [
                       "AWSSecurityHubFindings"
-                    ]
+                    ],
+                    "connectorId": "AWSSecurityHub"
                   }
                 ],
                 "tactics": [
@@ -1181,6 +1197,7 @@
                 ],
                 "entityMappings": [
                   {
+                    "entityType": "Account",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
@@ -1190,15 +1207,14 @@
                         "identifier": "CloudAppAccountId",
                         "columnName": "RootUserARN"
                       }
-                    ],
-                    "entityType": "Account"
+                    ]
                   }
                 ],
                 "customDetails": {
-                  "RootUserARN": "RootUserARN",
-                  "ComplianceControlId": "ComplianceSecurityControlId",
                   "Region": "AwsRegion",
-                  "FindingId": "AwsSecurityFindingId"
+                  "FindingId": "AwsSecurityFindingId",
+                  "ComplianceControlId": "ComplianceSecurityControlId",
+                  "RootUserARN": "RootUserARN"
                 },
                 "alertDetailsOverride": {
                   "alertDisplayNameFormat": "AWS Account {{AwsAccountId}} root user lacks MFA",
@@ -1256,7 +1272,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "IAMRootUserWithAccessKey_AnalyticalRules Analytics Rule with template version 3.0.2",
+        "description": "IAMRootUserWithAccessKey_AnalyticalRules Analytics Rule with template version 3.0.3",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('analyticRuleObject5').analyticRuleVersion5]",
@@ -1284,10 +1300,10 @@
                 "status": "Available",
                 "requiredDataConnectors": [
                   {
-                    "connectorId": "AWSSecurityHub",
                     "dataTypes": [
                       "AWSSecurityHubFindings"
-                    ]
+                    ],
+                    "connectorId": "AWSSecurityHub"
                   }
                 ],
                 "tactics": [
@@ -1306,6 +1322,7 @@
                 ],
                 "entityMappings": [
                   {
+                    "entityType": "Account",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
@@ -1315,15 +1332,14 @@
                         "identifier": "CloudAppAccountId",
                         "columnName": "RootUserARN"
                       }
-                    ],
-                    "entityType": "Account"
+                    ]
                   }
                 ],
                 "customDetails": {
-                  "RootUserARN": "RootUserARN",
-                  "ComplianceControlId": "ComplianceSecurityControlId",
                   "Region": "AwsRegion",
-                  "FindingId": "AwsSecurityFindingId"
+                  "FindingId": "AwsSecurityFindingId",
+                  "ComplianceControlId": "ComplianceSecurityControlId",
+                  "RootUserARN": "RootUserARN"
                 },
                 "alertDetailsOverride": {
                   "alertDisplayNameFormat": "AWS Account {{AwsAccountId}} root access key exists",
@@ -1381,7 +1397,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "SQSQueueNotEncrypted_AnalyticalRules Analytics Rule with template version 3.0.2",
+        "description": "SQSQueueNotEncrypted_AnalyticalRules Analytics Rule with template version 3.0.3",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('analyticRuleObject6').analyticRuleVersion6]",
@@ -1409,10 +1425,10 @@
                 "status": "Available",
                 "requiredDataConnectors": [
                   {
-                    "connectorId": "AWSSecurityHub",
                     "dataTypes": [
                       "AWSSecurityHubFindings"
-                    ]
+                    ],
+                    "connectorId": "AWSSecurityHub"
                   }
                 ],
                 "tactics": [
@@ -1426,6 +1442,7 @@
                 ],
                 "entityMappings": [
                   {
+                    "entityType": "Account",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
@@ -1435,23 +1452,22 @@
                         "identifier": "CloudAppAccountId",
                         "columnName": "AwsAccountId"
                       }
-                    ],
-                    "entityType": "Account"
+                    ]
                   },
                   {
+                    "entityType": "CloudApplication",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
                         "columnName": "QueueArn"
                       }
-                    ],
-                    "entityType": "CloudApplication"
+                    ]
                   }
                 ],
                 "customDetails": {
-                  "ComplianceControlId": "ComplianceSecurityControlId",
                   "Region": "AwsRegion",
-                  "FindingId": "AwsSecurityFindingId"
+                  "FindingId": "AwsSecurityFindingId",
+                  "ComplianceControlId": "ComplianceSecurityControlId"
                 },
                 "alertDetailsOverride": {
                   "alertDisplayNameFormat": "SQS queue {{QueueArn}} not encrypted at rest",
@@ -1509,7 +1525,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "SQSQueuePublicAccess_AnalyticalRules Analytics Rule with template version 3.0.2",
+        "description": "SQSQueuePublicAccess_AnalyticalRules Analytics Rule with template version 3.0.3",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('analyticRuleObject7').analyticRuleVersion7]",
@@ -1537,10 +1553,10 @@
                 "status": "Available",
                 "requiredDataConnectors": [
                   {
-                    "connectorId": "AWSSecurityHub",
                     "dataTypes": [
                       "AWSSecurityHubFindings"
-                    ]
+                    ],
+                    "connectorId": "AWSSecurityHub"
                   }
                 ],
                 "tactics": [
@@ -1553,6 +1569,7 @@
                 ],
                 "entityMappings": [
                   {
+                    "entityType": "Account",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
@@ -1562,24 +1579,23 @@
                         "identifier": "CloudAppAccountId",
                         "columnName": "AwsAccountId"
                       }
-                    ],
-                    "entityType": "Account"
+                    ]
                   },
                   {
+                    "entityType": "CloudApplication",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
                         "columnName": "QueueArn"
                       }
-                    ],
-                    "entityType": "CloudApplication"
+                    ]
                   }
                 ],
                 "customDetails": {
-                  "QueueArn": "QueueArn",
-                  "ComplianceControlId": "ComplianceSecurityControlId",
                   "Region": "AwsRegion",
-                  "FindingId": "AwsSecurityFindingId"
+                  "FindingId": "AwsSecurityFindingId",
+                  "ComplianceControlId": "ComplianceSecurityControlId",
+                  "QueueArn": "QueueArn"
                 },
                 "alertDetailsOverride": {
                   "alertDisplayNameFormat": "Public access detected for SQS queue {{QueueArn}}",
@@ -1637,7 +1653,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "SSMDocumentsPublicSharingEnabled_AnalyticalRules Analytics Rule with template version 3.0.2",
+        "description": "SSMDocumentsPublicSharingEnabled_AnalyticalRules Analytics Rule with template version 3.0.3",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('analyticRuleObject8').analyticRuleVersion8]",
@@ -1665,10 +1681,10 @@
                 "status": "Available",
                 "requiredDataConnectors": [
                   {
-                    "connectorId": "AWSSecurityHub",
                     "dataTypes": [
                       "AWSSecurityHubFindings"
-                    ]
+                    ],
+                    "connectorId": "AWSSecurityHub"
                   }
                 ],
                 "tactics": [
@@ -1679,6 +1695,7 @@
                 ],
                 "entityMappings": [
                   {
+                    "entityType": "Account",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
@@ -1688,14 +1705,13 @@
                         "identifier": "CloudAppAccountId",
                         "columnName": "AwsAccountId"
                       }
-                    ],
-                    "entityType": "Account"
+                    ]
                   }
                 ],
                 "customDetails": {
-                  "ComplianceControlId": "ComplianceSecurityControlId",
                   "Region": "AwsRegion",
-                  "FindingId": "AwsSecurityFindingId"
+                  "FindingId": "AwsSecurityFindingId",
+                  "ComplianceControlId": "ComplianceSecurityControlId"
                 },
                 "alertDetailsOverride": {
                   "alertDisplayNameFormat": "AWS Account {{AwsAccountId}} SSM documents public sharing enabled",
@@ -1753,7 +1769,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "CloudTrailLogFileValidationDisabled_HuntingQueries Hunting Query with template version 3.0.2",
+        "description": "CloudTrailLogFileValidationDisabled_HuntingQueries Hunting Query with template version 3.0.3",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('huntingQueryObject1').huntingQueryVersion1]",
@@ -1837,7 +1853,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "EC2InstancePublicIPv4_HuntingQueries Hunting Query with template version 3.0.2",
+        "description": "EC2InstancePublicIPv4_HuntingQueries Hunting Query with template version 3.0.3",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('huntingQueryObject2').huntingQueryVersion2]",
@@ -1921,7 +1937,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "IAMUserMFADisabled_HuntingQueries Hunting Query with template version 3.0.2",
+        "description": "IAMUserMFADisabled_HuntingQueries Hunting Query with template version 3.0.3",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('huntingQueryObject3').huntingQueryVersion3]",
@@ -2001,7 +2017,7 @@
       "apiVersion": "2023-04-01-preview",
       "location": "[parameters('workspace-location')]",
       "properties": {
-        "version": "3.0.2",
+        "version": "3.0.3",
         "kind": "Solution",
         "contentSchemaVersion": "3.0.0",
         "displayName": "AWS Security Hub",

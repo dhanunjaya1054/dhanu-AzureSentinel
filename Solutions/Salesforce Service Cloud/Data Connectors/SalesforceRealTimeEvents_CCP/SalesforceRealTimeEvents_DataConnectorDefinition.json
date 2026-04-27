@@ -1,0 +1,196 @@
+{
+  "name": "SalesforceRealTimeEventsCCPDefinition",
+  "apiVersion": "2022-09-01-preview",
+  "type": "Microsoft.SecurityInsights/dataConnectorDefinitions",
+  "location": "{{location}}",
+  "kind": "Customizable",
+  "properties": {
+    "connectorUiConfig": {
+      "id": "SalesforceRealTimeEventsCCPDefinition",
+      "title": "Salesforce Real-Time Event Monitoring (via Codeless Connector Framework)",
+      "publisher": "Microsoft",
+      "descriptionMarkdown": "The Salesforce Real-Time Event Monitoring data connector provides the capability to ingest security and anomaly detection events from Salesforce into Microsoft Sentinel in near real-time. This connector accesses the [Real-Time Event Monitoring](https://help.salesforce.com/s/articleView?language=en_US&id=xcloud.real_time_event_monitoring_events.htm&type=5) events via the Query API, enabling immediate visibility into security-related activities, credential stuffing, session hijacking, and anomalous user behavior.\n\n**Key Capabilities:**\n- **Real-time security monitoring:** Ingest events as they occur with minimal latency\n- **Security-focused events:** Includes ApiAnomalyEventStore, CredentialStuffingEventStore, SessionHijackingEventStore, ReportAnomalyEventStore\n- **Enhanced threat detection:** Identify suspicious activities immediately for faster incident response\n- **Compliance and auditing:** Meet real-time security monitoring requirements",
+      "graphQueriesTableName": "SalesforceRealTimeEvents_CL",
+      "graphQueries": [
+        {
+          "metricName": "Total data received",
+          "legend": "Salesforce Real-Time Event Monitoring Events",
+          "baseQuery": "{{graphQueriesTableName}}"
+        }
+      ],
+      "sampleQueries": [
+        {
+          "description": "Get all Real-Time security events from last 24 hours",
+          "query": "{{graphQueriesTableName}}\n| where TimeGenerated > ago(24h)\n| take 10"
+        },
+        {
+          "description": "View Credential Stuffing events",
+          "query": "{{graphQueriesTableName}}\n| where EventType == 'CredentialStuffingEventStore'\n| project TimeGenerated, Username, Score, Summary, SourceIp"
+        },
+        {
+          "description": "View Session Hijacking events",
+          "query": "{{graphQueriesTableName}}\n| where EventType == 'SessionHijackingEventStore'\n| project TimeGenerated, Username, CurrentIp, PreviousIp, Score, Summary"
+        },
+        {
+          "description": "View API Anomaly events",
+          "query": "{{graphQueriesTableName}}\n| where EventType == 'ApiAnomalyEventStore'\n| project TimeGenerated, Username, SourceIp, RowsProcessed, Score, Summary"
+        }
+      ],
+      "dataTypes": [
+        {
+          "name": "{{graphQueriesTableName}}",
+          "lastDataReceivedQuery": "{{graphQueriesTableName}}\n | where TimeGenerated > ago(12h) | summarize Time = max(TimeGenerated)\n | where isnotempty(Time)"
+        }
+      ],
+      "connectivityCriteria": [
+        {
+          "type": "HasDataConnectors",
+          "value": []
+        }
+      ],
+      "availability": {
+        "isPreview": true,
+        "status": 1
+      },
+      "permissions": {
+        "resourceProvider": [
+          {
+            "provider": "Microsoft.OperationalInsights/workspaces",
+            "permissionsDisplayText": "Read and Write permissions are required.",
+            "providerDisplayName": "Workspace",
+            "scope": "Workspace",
+            "requiredPermissions": {
+              "write": true,
+              "read": true,
+              "delete": true,
+              "action": false
+            }
+          }
+        ],
+        "customs": [
+          {
+            "name": "Salesforce Real-Time Event Monitoring License",
+            "description": "Salesforce Shield or Event Monitoring Add-on license is required to access Real-Time Event Monitoring events."
+          },
+          {
+            "name": "Salesforce API access",
+            "description": "Access to the Salesforce API through a Connected App is required. The Connected App must have the 'Manage Data' (api) OAuth scope."
+          }
+        ]
+      },
+      "instructionSteps": [
+        {
+          "title": "Prerequisites",
+          "description": "Before setting up this connector:\n\n1. You need **Salesforce Shield** or **Event Monitoring Add-on** license\n2. **System Administrator** role with **View Real-Time Event Monitoring Data** permission\n3. Real-Time Event Monitoring must be **enabled** in your Salesforce org\n4. **API access** through a Connected App with OAuth 2.0 Client Credentials Flow"
+        },
+        {
+          "title": "Step 1: Verify Real-Time Event Monitoring Access",
+          "description": "1. Log in to Salesforce as System Administrator\n2. Navigate to **Setup** → Quick Find → **Event Manager**\n3. Verify you can see Real-Time Event Types:\n   - ApiAnomalyEventStore\n   - CredentialStuffingEventStore\n   - SessionHijackingEventStore\n   - ReportAnomalyEventStore\n   - PermissionSetEventStore\n4. If these are not visible, contact Salesforce support to enable Real-Time Event Monitoring"
+        },
+        {
+          "title": "Step 2: Create Connected App for API Access",
+          "description": "Follow these steps to create a Connected App:\n\n1. Navigate to **Setup** → Quick Find → **App Manager**\n2. Click **New Connected App**\n3. Configure Basic Information:\n   - **Connected App Name:** Microsoft Sentinel Real-Time Events\n   - **API Name:** (auto-generated)\n   - **Contact Email:** Your admin email\n4. Enable OAuth Settings:\n   - Check **Enable OAuth Settings**\n   - **Callback URL:** https://login.salesforce.com/services/oauth2/callback\n   - **Enable Client Credentials Flow:** Check this box\n   - **Selected OAuth Scopes:** Add \"Manage user data via APIs (api)\"\n5. Click **Save** and then **Continue**\n6. On the Connected App details page:\n   - Click **Manage Consumer Details**\n   - Verify your identity\n   - Save the **Consumer Key** and **Consumer Secret**"
+        },
+        {
+          "title": "Step 3: Configure Connected App Policies",
+          "description": "1. From the Connected App detail page, click **Manage**\n2. Click **Edit Policies**\n3. Under OAuth Policies:\n   - **Client Credentials Flow:** Select a pre-authorized run-as user (must have API access)\n   - **IP Relaxation:** Relax IP restrictions (or configure Azure IP ranges)\n4. Click **Save**"
+        },
+        {
+          "title": "Step 4: Get Your Salesforce Domain Name",
+          "description": "1. Navigate to **Setup** → Quick Find → **My Domain**\n2. Copy your domain URL (e.g., **https://your-domain.my.salesforce.com**)\n3. **Important:** Do not include a trailing slash"
+        },
+        {
+          "title": "Step 5: Connect to Microsoft Sentinel",
+          "description": "Provide your Salesforce credentials and configuration below to start ingesting Real-Time Event Monitoring data.",
+          "instructions": [
+            {
+              "type": "Textbox",
+              "parameters": {
+                "label": "Salesforce Domain Name",
+                "placeholder": "https://your-domain.my.salesforce.com",
+                "type": "text",
+                "name": "salesforceDomainName",
+                "validations": {
+                  "required": true,
+                  "regex": "^https://[a-zA-Z0-9-]+\\.my\\.salesforce\\.com$",
+                  "regexMessage": "Please enter a valid Salesforce domain (e.g., https://your-domain.my.salesforce.com)"
+                }
+              }
+            },
+            {
+              "type": "Dropdown",
+              "parameters": {
+                "label": "Real-Time Event Types to Monitor",
+                "name": "eventTypes",
+                "options": [
+                  {
+                    "key": "ApiAnomalyEventStore,CredentialStuffingEventStore,SessionHijackingEventStore,ReportAnomalyEventStore",
+                    "text": "All Security Events (Recommended)"
+                  },
+                  {
+                    "key": "CredentialStuffingEventStore,SessionHijackingEventStore",
+                    "text": "Authentication Security Events Only"
+                  },
+                  {
+                    "key": "ApiAnomalyEventStore",
+                    "text": "API Anomaly Events Only"
+                  },
+                  {
+                    "key": "ApiAnomalyEventStore,CredentialStuffingEventStore,SessionHijackingEventStore,ReportAnomalyEventStore,PermissionSetEventStore",
+                    "text": "All Available Real-Time Events"
+                  }
+                ],
+                "placeholder": "Select event types to monitor",
+                "isMultiSelect": false,
+                "required": true
+              }
+            },
+            {
+              "type": "Dropdown",
+              "parameters": {
+                "label": "Data Collection Interval",
+                "name": "pollingInterval",
+                "options": [
+                  {
+                    "key": "5",
+                    "text": "Every 5 minutes (Recommended for real-time monitoring)"
+                  },
+                  {
+                    "key": "10",
+                    "text": "Every 10 minutes"
+                  },
+                  {
+                    "key": "15",
+                    "text": "Every 15 minutes"
+                  },
+                  {
+                    "key": "30",
+                    "text": "Every 30 minutes"
+                  }
+                ],
+                "placeholder": "Select polling interval",
+                "isMultiSelect": false,
+                "required": true
+              }
+            },
+            {
+              "type": "OAuthForm",
+              "parameters": {
+                "clientIdLabel": "Consumer Key",
+                "clientSecretLabel": "Consumer Secret",
+                "clientIdPlaceholder": "Enter Connected App Consumer Key",
+                "clientSecretPlaceholder": "Enter Connected App Consumer Secret",
+                "connectButtonLabel": "Connect",
+                "disconnectButtonLabel": "Disconnect"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Validation",
+          "description": "After connecting, validate data ingestion:\n\n1. Wait 10-15 minutes for initial data collection\n2. In Microsoft Sentinel, run this query:\n   ```\n   SalesforceRealTimeEvents_CL\n   | where TimeGenerated > ago(1h)\n   | summarize Count = count() by EventType\n   ```\n3. Verify you see events appearing in the table\n4. If no data appears, check:\n   - Real-Time Event Monitoring is enabled in Salesforce\n   - Connected App has correct OAuth scopes\n   - Run-as user has proper permissions\n   - Domain name is correct without trailing slash"
+        }
+      ]
+    }
+  }
+}

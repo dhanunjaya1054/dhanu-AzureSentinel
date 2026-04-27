@@ -1,0 +1,119 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dataCollectionRuleName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Data Collection Rule"
+      },
+      "defaultValue": "SalesforceRealTimeEvents-DCR"
+    },
+    "workspaceResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the Log Analytics workspace"
+      }
+    },
+    "dataCollectionEndpointId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the Data Collection Endpoint"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for the DCR"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/dataCollectionRules",
+      "apiVersion": "2023-03-11",
+      "name": "[parameters('dataCollectionRuleName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "dataCollectionEndpointId": "[parameters('dataCollectionEndpointId')]",
+        "streamDeclarations": {
+          "Custom-SalesforceRealTimeEvents_CL": {
+            "columns": [
+              {
+                "name": "TimeGenerated",
+                "type": "datetime"
+              },
+              {
+                "name": "EventType",
+                "type": "string"
+              },
+              {
+                "name": "EventDate",
+                "type": "datetime"
+              },
+              {
+                "name": "EventIdentifier",
+                "type": "string"
+              },
+              {
+                "name": "Username",
+                "type": "string"
+              },
+              {
+                "name": "UserId",
+                "type": "string"
+              },
+              {
+                "name": "SourceIp",
+                "type": "string"
+              },
+              {
+                "name": "Score",
+                "type": "real"
+              },
+              {
+                "name": "Summary",
+                "type": "string"
+              },
+              {
+                "name": "SecurityEventData",
+                "type": "dynamic"
+              }
+            ]
+          }
+        },
+        "destinations": {
+          "logAnalytics": [
+            {
+              "workspaceResourceId": "[parameters('workspaceResourceId')]",
+              "name": "SalesforceRealTimeEventsDestination"
+            }
+          ]
+        },
+        "dataFlows": [
+          {
+            "streams": [
+              "Custom-SalesforceRealTimeEvents_CL"
+            ],
+            "destinations": [
+              "SalesforceRealTimeEventsDestination"
+            ],
+            "transformKql": "source | extend TimeGenerated = now()",
+            "outputStream": "Custom-SalesforceRealTimeEvents_CL"
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+    "dataCollectionRuleId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Insights/dataCollectionRules', parameters('dataCollectionRuleName'))]"
+    },
+    "immutableId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionRules', parameters('dataCollectionRuleName')), '2023-03-11').immutableId]"
+    }
+  }
+}

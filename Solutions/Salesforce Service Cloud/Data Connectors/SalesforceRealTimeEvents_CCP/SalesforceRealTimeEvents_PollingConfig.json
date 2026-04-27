@@ -1,0 +1,56 @@
+{
+  "type": "Microsoft.SecurityInsights/dataConnectors",
+  "apiVersion": "2024-09-01",
+  "name": "SalesforceRealTimeEventsPolling",
+  "location": "[[parameters('location')]",
+  "kind": "RestApiPoller",
+  "properties": {
+    "auth": {
+      "type": "OAuth2",
+      "ClientId": "[[parameters('clientId')]",
+      "ClientSecret": "[[parameters('clientSecret')]",
+      "GrantType": "client_credentials",
+      "TokenEndpoint": "[[concat(parameters('salesforceDomainName'),'/services/oauth2/token')]",
+      "TokenEndpointHeaders": {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      "TokenEndpointQueryParameters": {}
+    },
+    "request": {
+      "apiEndpoint": "[[concat(parameters('salesforceDomainName'),'/services/data/v65.0/query')]",
+      "httpMethod": "GET",
+      "rateLimitQPS": 10,
+      "queryWindowInMin": "[[int(parameters('pollingInterval'))]",
+      "queryTimeFormat": "yyyy-MM-dd'T'HH:mm:ss'Z'",
+      "retryCount": 3,
+      "timeoutInSeconds": 60,
+      "headers": {
+        "Accept": "application/json",
+        "User-Agent": "Microsoft-Sentinel-RealTimeEvents"
+      },
+      "queryParameters": {
+        "q": "SELECT Id,EventIdentifier,EventDate,EventType,Username,UserId,SourceIp,Score,Summary,SecurityEventData FROM [[parameters('eventTypes')[0]]] WHERE EventDate > {_QueryWindowStartTime} AND EventDate <= {_QueryWindowEndTime}"
+      }
+    },
+    "response": {
+      "eventsJsonPaths": [
+        "$.records"
+      ],
+      "format": "json"
+    },
+    "paging": {
+      "pagingType": "NextPageUrl",
+      "nextPageUrl": "[[parameters('salesforceDomainName')]",
+      "nextPageTokenJsonPath": "$.nextRecordsUrl",
+      "isNextPageTokenRelativeUrl": true
+    },
+    "connectorDefinitionName": "SalesforceRealTimeEventsCCPDefinition",
+    "dataType": "SalesforceRealTimeEvents_CL",
+    "dcrConfig": {
+      "streamName": "Custom-SalesforceRealTimeEvents_CL",
+      "dataCollectionEndpoint": "{{dataCollectionEndpoint}}",
+      "dataCollectionRuleImmutableId": "{{dataCollectionRuleImmutableId}}"
+    }
+  }
+}
