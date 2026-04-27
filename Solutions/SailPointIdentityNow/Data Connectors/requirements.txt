@@ -6,4 +6,3 @@ azure-functions==1.6.0
 requests==2.32.4
 azure-core==1.33.0
 azure-data-tables==12.4.4
-azure-cosmos==4.2.0
