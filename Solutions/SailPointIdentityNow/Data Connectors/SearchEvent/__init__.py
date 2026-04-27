@@ -12,6 +12,7 @@ import hmac
 import base64
 import re
 from azure.data.tables import TableServiceClient
+from azure.core.credentials import AzureNamedKeyCredential
 
 tenant_id = os.environ["TENANT_ID"]
 grant_type = os.environ["GRANT_TYPE"]
@@ -109,7 +110,7 @@ def main(mytimer: func.TimerRequest) -> None:
     checkpoint_table_name = 'checkpointTable'
     table_service_client = TableServiceClient(
         endpoint=f'https://{storage_account_name}.table.core.windows.net',
-        credential=access_key
+        credential=AzureNamedKeyCredential(storage_account_name, access_key)
     )
     table_client = table_service_client.create_table_if_not_exists(checkpoint_table_name)
     task = {
