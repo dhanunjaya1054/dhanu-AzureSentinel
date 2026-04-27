@@ -31,7 +31,7 @@
   },
   "variables": {
     "_solutionName": "SailPointIdentityNow",
-    "_solutionVersion": "3.0.0",
+    "_solutionVersion": "3.0.1",
     "solutionId": "sailpoint1582673310610.sentinel_offering",
     "_solutionId": "[variables('solutionId')]",
     "uiConfigId1": "SailPointIdentityNow",
@@ -92,30 +92,7 @@
     "playbookContentId1": "Custom Connector",
     "_playbookContentId1": "[variables('playbookContentId1')]",
     "playbookTemplateSpecName1": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat(parameters('workspace'),'-lc-',uniquestring(variables('_playbookContentId1'))))]",
-	"reassignReferenceId": "ef38f94347e94562b5bb8424a56397d8",
-	"_reassignReferenceId": "[[variables('reassignReferenceId')]",
-	"modifiedById": "2c9180a46faadee4016fb4e018c20639",
-	"_modifiedById": "[[variables('modifiedById')]",
-	"scheduleId": "7a724640-0c17-4ce9-a8c3-4a89738459c8",
-	"_scheduleId": "[[variables('scheduleId')]",
-	"savedSearchId": "554f1511-f0a1-4744-ab14-599514d3e57c",
-	"_savedSearchId": "[[variables('savedSearchId')]",
-	"ownerId": "2c91808568c529c60168cca6f90c1313",
-	"_ownerId": "[[variables('ownerId')]",
-	"operationId-IdentityCertificationById": "IdentityCertificationById",
-	"_operationId-IdentityCertificationById": "[[variables('operationId-IdentityCertificationById')]",
-	"operationId-ReturnASavedSearchById": "ReturnASavedSearchById",
-	"_operationId-ReturnASavedSearchById": "[[variables('operationId-ReturnASavedSearchById')]",
-	"operationId-DeleteADocumentById": "DeleteADocumentById",
-	"_operationId-DeleteADocumentById": "[[variables('operationId-DeleteADocumentById')]",
-	"operationId-ExecuteASavedSearchById": "ExecuteASavedSearchById",
-	"_operationId-ExecuteASavedSearchById": "[[variables('operationId-ExecuteASavedSearchById')]",
-	"operationId-ReturnAScheduledSearchById": "ReturnAScheduledSearchById",
-	"_operationId-ReturnAScheduledSearchById": "[[variables('operationId-ReturnAScheduledSearchById')]",
-	"operationId-DeleteAScheduledSearchById": "DeleteAScheduledSearchById",
-	"_operationId-DeleteAScheduledSearchById": "[[variables('operationId-DeleteAScheduledSearchById')]",
-	"operationId-GetADocumentById": "GetADocumentById",
-	"_operationId-GetADocumentById": "[[variables('operationId-GetADocumentById')]",
+    "workspaceResourceId": "[resourceId('microsoft.OperationalInsights/Workspaces', parameters('workspace'))]",
     "_playbookcontentProductId1": "[concat(take(variables('_solutionId'),50),'-','lc','-', uniqueString(concat(variables('_solutionId'),'-','LogicAppsCustomConnector','-',variables('_playbookContentId1'),'-', variables('playbookVersion1'))))]",
     "_solutioncontentProductId": "[concat(take(variables('_solutionId'),50),'-','sl','-', uniqueString(concat(variables('_solutionId'),'-','Solution','-',variables('_solutionId'),'-', variables('_solutionVersion'))))]"
   },
@@ -129,7 +106,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "SailPointIdentityNow data connector with template version 3.0.0",
+        "description": "SailPointIdentityNow data connector with template version 3.0.1",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('dataConnectorVersion1')]",
@@ -510,7 +487,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "SailPointIdentityNowAlertsForTriggers_AnalyticalRules Analytics Rule with template version 3.0.0",
+        "description": "SailPointIdentityNowAlertsForTriggers_AnalyticalRules Analytics Rule with template version 3.0.1",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('analyticRuleObject1').analyticRuleVersion1]",
@@ -554,13 +531,13 @@
                 ],
                 "entityMappings": [
                   {
-                    "entityType": "Account",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
                         "columnName": "Metadata_triggertId_s"
                       }
-                    ]
+                    ],
+                    "entityType": "Account"
                   }
                 ]
               }
@@ -614,7 +591,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "SailPointIdentityNowEventType_AnalyticalRules Analytics Rule with template version 3.0.0",
+        "description": "SailPointIdentityNowEventType_AnalyticalRules Analytics Rule with template version 3.0.1",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('analyticRuleObject2').analyticRuleVersion2]",
@@ -656,13 +633,13 @@
                 ],
                 "entityMappings": [
                   {
-                    "entityType": "Account",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
                         "columnName": "technicalName_s"
                       }
-                    ]
+                    ],
+                    "entityType": "Account"
                   }
                 ]
               }
@@ -716,7 +693,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "SailPointIdentityNowEventTypeTechnicalName_AnalyticalRules Analytics Rule with template version 3.0.0",
+        "description": "SailPointIdentityNowEventTypeTechnicalName_AnalyticalRules Analytics Rule with template version 3.0.1",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('analyticRuleObject3').analyticRuleVersion3]",
@@ -758,13 +735,13 @@
                 ],
                 "entityMappings": [
                   {
-                    "entityType": "Account",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
                         "columnName": "technicalName_s"
                       }
-                    ]
+                    ],
+                    "entityType": "Account"
                   }
                 ]
               }
@@ -818,7 +795,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "SailPointIdentityNowFailedEvents_AnalyticalRules Analytics Rule with template version 3.0.0",
+        "description": "SailPointIdentityNowFailedEvents_AnalyticalRules Analytics Rule with template version 3.0.1",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('analyticRuleObject4').analyticRuleVersion4]",
@@ -860,13 +837,13 @@
                 ],
                 "entityMappings": [
                   {
-                    "entityType": "Account",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
                         "columnName": "technicalName_s"
                       }
-                    ]
+                    ],
+                    "entityType": "Account"
                   }
                 ]
               }
@@ -920,7 +897,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "SailPointIdentityNowFailedEventsBasedOnTime_AnalyticalRules Analytics Rule with template version 3.0.0",
+        "description": "SailPointIdentityNowFailedEventsBasedOnTime_AnalyticalRules Analytics Rule with template version 3.0.1",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('analyticRuleObject5').analyticRuleVersion5]",
@@ -962,13 +939,13 @@
                 ],
                 "entityMappings": [
                   {
-                    "entityType": "Account",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
                         "columnName": "technicalName_s"
                       }
-                    ]
+                    ],
+                    "entityType": "Account"
                   }
                 ]
               }
@@ -1022,7 +999,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "SailPointIdentityNowUserWithFailedEvents_AnalyticalRules Analytics Rule with template version 3.0.0",
+        "description": "SailPointIdentityNowUserWithFailedEvents_AnalyticalRules Analytics Rule with template version 3.0.1",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('analyticRuleObject6').analyticRuleVersion6]",
@@ -1064,13 +1041,13 @@
                 ],
                 "entityMappings": [
                   {
-                    "entityType": "Account",
                     "fieldMappings": [
                       {
                         "identifier": "Name",
                         "columnName": "technicalName_s"
                       }
-                    ]
+                    ],
+                    "entityType": "Account"
                   }
                 ]
               }
@@ -1124,7 +1101,7 @@
         "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
       ],
       "properties": {
-        "description": "SailPoint-IdentityNow Playbook with template version 3.0.0",
+        "description": "SailPoint-IdentityNow Playbook with template version 3.0.1",
         "mainTemplate": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "[variables('playbookVersion1')]",
@@ -1147,6 +1124,16 @@
           "variables": {
             "requestedItemsId": "2c9180835d2e5168015d32f890ca1581",
             "_requestedItemsId": "[[variables('requestedItemsId')]",
+            "reassignReferenceId": "ef38f94347e94562b5bb8424a56397d8",
+            "_reassignReferenceId": "[[variables('reassignReferenceId')]",
+            "modifiedById": "2c9180a46faadee4016fb4e018c20639",
+            "_modifiedById": "[[variables('modifiedById')]",
+            "scheduleId": "7a724640-0c17-4ce9-a8c3-4a89738459c8",
+            "_scheduleId": "[[variables('scheduleId')]",
+            "savedSearchId": "554f1511-f0a1-4744-ab14-599514d3e57c",
+            "_savedSearchId": "[[variables('savedSearchId')]",
+            "ownerId": "2c91808568c529c60168cca6f90c1313",
+            "_ownerId": "[[variables('ownerId')]",
             "operationId-GetAccessToken": "GetAccessToken",
             "_operationId-GetAccessToken": "[[variables('operationId-GetAccessToken')]",
             "operationId-SubmitAnAccessRequest": "SubmitAnAccessRequest",
@@ -1177,6 +1164,8 @@
             "_operationId-GetAnAccountActivity": "[[variables('operationId-GetAnAccountActivity')]",
             "operationId-IdentityCampaignCertificationsByIds": "IdentityCampaignCertificationsByIds",
             "_operationId-IdentityCampaignCertificationsByIds": "[[variables('operationId-IdentityCampaignCertificationsByIds')]",
+            "operationId-IdentityCertificationById": "IdentityCertificationById",
+            "_operationId-IdentityCertificationById": "[[variables('operationId-IdentityCertificationById')]",
             "operationId-ListOfAccessReviewItems": "ListOfAccessReviewItems",
             "_operationId-ListOfAccessReviewItems": "[[variables('operationId-ListOfAccessReviewItems')]",
             "operationId-AccessSummaries": "AccessSummaries",
@@ -1205,12 +1194,22 @@
             "_operationId-ReturnAListOfSavedSearches": "[[variables('operationId-ReturnAListOfSavedSearches')]",
             "operationId-CreateASavedSearch": "CreateASavedSearch",
             "_operationId-CreateASavedSearch": "[[variables('operationId-CreateASavedSearch')]",
+            "operationId-ReturnASavedSearchById": "ReturnASavedSearchById",
+            "_operationId-ReturnASavedSearchById": "[[variables('operationId-ReturnASavedSearchById')]",
+            "operationId-DeleteADocumentById": "DeleteADocumentById",
+            "_operationId-DeleteADocumentById": "[[variables('operationId-DeleteADocumentById')]",
             "operationId-UpdateSavedSearch": "UpdateSavedSearch",
             "_operationId-UpdateSavedSearch": "[[variables('operationId-UpdateSavedSearch')]",
+            "operationId-ExecuteASavedSearchById": "ExecuteASavedSearchById",
+            "_operationId-ExecuteASavedSearchById": "[[variables('operationId-ExecuteASavedSearchById')]",
             "operationId-ReturnAListOfScheduledSearches": "ReturnAListOfScheduledSearches",
             "_operationId-ReturnAListOfScheduledSearches": "[[variables('operationId-ReturnAListOfScheduledSearches')]",
             "operationId-CreateANewScheduledSearch": "CreateANewScheduledSearch",
             "_operationId-CreateANewScheduledSearch": "[[variables('operationId-CreateANewScheduledSearch')]",
+            "operationId-ReturnAScheduledSearchById": "ReturnAScheduledSearchById",
+            "_operationId-ReturnAScheduledSearchById": "[[variables('operationId-ReturnAScheduledSearchById')]",
+            "operationId-DeleteAScheduledSearchById": "DeleteAScheduledSearchById",
+            "_operationId-DeleteAScheduledSearchById": "[[variables('operationId-DeleteAScheduledSearchById')]",
             "operationId-UpdateAnExistingScheduledSearch": "UpdateAnExistingScheduledSearch",
             "_operationId-UpdateAnExistingScheduledSearch": "[[variables('operationId-UpdateAnExistingScheduledSearch')]",
             "operationId-UnsubscribeARecipientFromScheduledSearch": "UnsubscribeARecipientFromScheduledSearch",
@@ -1221,6 +1220,8 @@
             "_operationId-CountTheNumberOfDocumentsSatisfyingAQuery": "[[variables('operationId-CountTheNumberOfDocumentsSatisfyingAQuery')]",
             "operationId-PerformASearchQueryAggregation": "PerformASearchQueryAggregation",
             "_operationId-PerformASearchQueryAggregation": "[[variables('operationId-PerformASearchQueryAggregation')]",
+            "operationId-GetADocumentById": "GetADocumentById",
+            "_operationId-GetADocumentById": "[[variables('operationId-GetADocumentById')]",
             "workspace-location-inline": "[concat('[resourceGroup().locatio', 'n]')]",
             "playbookContentId1": "Custom Connector",
             "playbookId1": "[[resourceId('Microsoft.Web/customApis', parameters('PlaybookName'))]",
@@ -13261,7 +13262,7 @@
       "apiVersion": "2023-04-01-preview",
       "location": "[parameters('workspace-location')]",
       "properties": {
-        "version": "3.0.0",
+        "version": "3.0.1",
         "kind": "Solution",
         "contentSchemaVersion": "3.0.0",
         "displayName": "SailPointIdentityNow",
