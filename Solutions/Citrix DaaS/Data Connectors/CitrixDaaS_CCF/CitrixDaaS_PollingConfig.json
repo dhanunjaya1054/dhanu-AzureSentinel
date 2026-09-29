@@ -28,11 +28,12 @@
         "httpMethod": "POST",
         "rateLimitQPS": 10,
         "queryWindowInMin": 30,
+        "queryTimeFormat": "yyyy-MM-ddTHH:mm:ssZ",
         "isPostPayloadJson": true,
         "queryParameters": {
           "limit": "1000"
         },
-        "queryParametersTemplate": "{\"SearchFilters\":[{\"Property\":\"StartTime\",\"Value\":\"Last30Minutes\",\"Operator\":\"IsWithin\"}]}",
+        "queryParametersTemplate": "{\"SearchFilters\":[{\"Property\":\"StartTime\",\"Value\":\"{_QueryWindowStartTime}\",\"Operator\":\"GreaterThanOrEquals\"},{\"Property\":\"StartTime\",\"Value\":\"{_QueryWindowEndTime}\",\"Operator\":\"LessThan\"}]}",
         "retryCount": 3,
         "timeoutInSeconds": 40,
         "headers": {
@@ -102,11 +103,12 @@
         "httpMethod": "POST",
         "rateLimitQPS": 10,
         "queryWindowInMin": 30,
+        "queryTimeFormat": "yyyy-MM-ddTHH:mm:ssZ",
         "isPostPayloadJson": true,
         "queryParameters": {
           "limit": "1000"
         },
-        "queryParametersTemplate": "{\"SearchFilters\":[{\"Property\":\"StartTime\",\"Value\":\"Last30Minutes\",\"Operator\":\"IsWithin\"}]}",
+        "queryParametersTemplate": "{\"SearchFilters\":[{\"Property\":\"StartTime\",\"Value\":\"{_QueryWindowStartTime}\",\"Operator\":\"GreaterThanOrEquals\"},{\"Property\":\"StartTime\",\"Value\":\"{_QueryWindowEndTime}\",\"Operator\":\"LessThan\"}]}",
         "retryCount": 3,
         "timeoutInSeconds": 40,
         "headers": {
